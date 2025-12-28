@@ -1,0 +1,29 @@
+/*
+===============================================================================
+Dimensions Exploration
+===============================================================================
+Purpose:
+    - To explore the structure of dimension tables.
+	
+SQL Functions Used:
+    - DISTINCT
+    - ORDER BY
+===============================================================================
+*/
+
+-- Explore ALL Countries our customers come from 
+	SELECT DISTINCT 
+		country 
+	FROM Gold.dim_customers
+	ORDER BY country;
+
+-- Explore ALL categories "The major Division"
+	SELECT DISTINCT 
+		category, 
+		subcategory, 
+		product_name 
+	FROM Gold.dim_product
+	ORDER BY 
+		category, 
+		subcategory, 
+		product_name ;
