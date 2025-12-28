@@ -20,6 +20,15 @@ Highlights:
 		- average monthly spend
 =============================================================================
 */
+
+	/* --------------------------------------------------------------------------
+	Create Report: Gold.report_product
+	-------------------------------------------------------------------------- */
+IF OBJECT_ID('Gold.report_product' , 'V') IS NOT NULL
+  DROP VIEW Gold.report_product
+
+GO
+
 CREATE VIEW Gold.report_product AS 
 	WITH base_query AS(
 	/* --------------------------------------------------------------------------
