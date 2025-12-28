@@ -1,0 +1,53 @@
+/*
+===============================================================================
+Data Segmentation Analysis
+===============================================================================
+Purpose:
+    - To group data into meaningful categories for targeted insights.
+    - For customer segmentation, product categorization, or regional analysis.
+
+SQL Functions Used:
+    - CASE: Defines custom segmentation logic.
+    - GROUP BY: Groups data into segments.
+===============================================================================
+*/
+
+/* Group customers into 3 segments based on their spending behavior:
+	- VIP : Customers with at least 12 months of history and spending more that 5,000
+	- Regular : Customers with at least 12 months of history but spending 5,000 or less
+	- New : Customers with lifespan less than 12 months
+And find the total nummber of customers by each group */
+WITH lifespan AS 
+	(
+	SELECT 
+		c.customer_key,
+		SUM(f.sales_amount) AS total_spending,
+		MIN(order_date) AS first_order,
+		MAX(order_date) AS last_order,
+		COUNT(c.customer_key) OVER() AS customer,
+		DATEDIFF(MONTH, MIN(order_date), MAX(order_date)) AS lifespan
+	FROM Gold.fact_sales f
+		LEFT JOIN Gold.dim_customers c
+			ON f.customer_key = c.customer_key
+		GROUP BY c.customer_key
+	)
+
+SELECT 
+	customer_segment,
+	COUNT(customer_key) AS total_customer,
+	customer
+FROM (
+	SELECT 
+		customer_key,
+		total_spending,
+		lifespan,
+		customer,
+		CASE 
+			WHEN lifespan >= 12 AND total_spending > 5000 THEN 'VIP'
+			WHEN lifespan >= 12 AND total_spending < 5000 THEN 'Regular'
+			ELSE 'New'
+		END AS customer_segment
+	FROM lifespan
+	)t 
+	GROUP BY customer_segment, customer
+	ORDER BY total_customer DESC
